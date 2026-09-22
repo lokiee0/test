@@ -1,0 +1,79 @@
+backend:
+  name: github
+  repo: YOUR_GITHUB_OWNER/dataclap-blog # TODO: update once the new repo exists
+  branch: main
+  # OAuth is brokered by a small self-hosted proxy (e.g. a Cloudflare Worker
+  # running github-oauth-proxy) since this project isn't hosted on Netlify.
+  # base_url points at that proxy; auth_endpoint is appended to it.
+  base_url: https://YOUR-OAUTH-PROXY.example.workers.dev # TODO: deploy the OAuth proxy and update this
+  auth_endpoint: auth
+
+# Local dev: run `npm run cms` alongside `npm run dev` and Decap will use
+# the filesystem instead of GitHub/OAuth when this block is present.
+local_backend: true
+
+media_folder: 'src/assets/uploads'
+public_folder: '/blog/uploads'
+
+locale: en
+site_url: https://blog.dataclap.com
+
+collections:
+  - name: posts
+    label: Posts
+    folder: src/data/posts/en
+    create: true
+    slug: '{{slug}}'
+    format: frontmatter
+    extension: md
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Publish Date, name: pubDate, widget: datetime }
+      - { label: Updated Date, name: updatedDate, widget: datetime, required: false }
+      - { label: Cover Image, name: cover, widget: image, required: false }
+      - label: Author
+        name: author
+        widget: relation
+        collection: authors
+        search_fields: [name]
+        value_field: '{{slug}}'
+        display_fields: [name]
+      - label: Topics
+        name: topics
+        widget: relation
+        collection: topics
+        multiple: true
+        required: false
+        search_fields: [name]
+        value_field: '{{slug}}'
+        display_fields: [name]
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: authors
+    label: Authors
+    folder: src/data/authors/en
+    create: true
+    slug: '{{slug}}'
+    format: frontmatter
+    extension: md
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Avatar, name: avatar, widget: image, required: false }
+      - { label: Bio, name: bio, widget: text, required: false }
+      - { label: Twitter, name: twitter, widget: string, required: false }
+      - { label: Website, name: website, widget: string, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  - name: topics
+    label: Topics
+    folder: src/data/topics/en
+    create: true
+    slug: '{{slug}}'
+    format: frontmatter
+    extension: md
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Body, name: body, widget: markdown, required: false }
